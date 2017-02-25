@@ -30,14 +30,12 @@ public class clueFind : MonoBehaviour {
     public GameObject lockUI;
     public InputField q1;
     private bool isShowing;
-    public Button close;
     private GameObject activeImage;
 
     void Start () {
 
         mainCamera = GameObject.FindWithTag("MainCamera");
-        Button btn = close.GetComponent<Button>();
-        btn.onClick.AddListener(closeWindow);
+        isShowing = false;
 
     }
 	
@@ -45,11 +43,6 @@ public class clueFind : MonoBehaviour {
 
         pickup();
 
-    }
-
-    void closeWindow(){
-        Cursor.lockState = CursorLockMode.Locked;
-        activeImage.SetActive(false);
     }
 
     void pickup()
@@ -82,47 +75,64 @@ public class clueFind : MonoBehaviour {
                 // check if main clue
                 clue = hit.collider.GetComponent<Clue>();
 
-                clueData clueMatch = null;
-                for (int i = 0; i < clues.Count; i++)
+                if (isShowing == false)
                 {
-                    if(clues[i].clue == clue)
+                    clueData clueMatch = null;
+                    for (int i = 0; i < clues.Count; i++)
                     {
-                        clueMatch = clues[i];
-                        break;
-                    }
-                }
-
-                //this is for when we find a main clue
-                if (clueMatch != null)
-                {
-                    clueMatch.uiButton.interactable = true;
-                    clueMatch.model.SetActive(false);
-                    notesUI.SetActive(true);
-                    clueMatch.closeupIMG.SetActive(true);
-                    activeImage = clueMatch.closeupIMG;
-                    Cursor.lockState = CursorLockMode.None;
-                }
-                //check for subclue
-                else
-                {
-                    for (int i = 0; i < sclues.Count; i++)
-                    {
-                        if (sclues[i].clue == clue)
+                        if (clues[i].clue == clue)
                         {
-                            clueMatch = sclues[i];
+                            clueMatch = clues[i];
                             break;
                         }
                     }
 
+                    //this is for when we find a main clue
                     if (clueMatch != null)
                     {
+                        clueMatch.uiButton.interactable = true;
+                        clueMatch.model.SetActive(false);
                         notesUI.SetActive(true);
                         clueMatch.closeupIMG.SetActive(true);
                         activeImage = clueMatch.closeupIMG;
-                        Cursor.lockState = CursorLockMode.None;
+                        isShowing = true;
+                    }
+                    //check for subclue
+                    else
+                    {
+                        for (int i = 0; i < sclues.Count; i++)
+                        {
+                            if (sclues[i].clue == clue)
+                            {
+                                clueMatch = sclues[i];
+                                break;
+                            }
+                        }
+
+                        if (clueMatch != null)
+                        {
+                            if (isShowing == false)
+                            {
+                                notesUI.SetActive(true);
+                                clueMatch.closeupIMG.SetActive(true);
+                                activeImage = clueMatch.closeupIMG;
+                                isShowing = true;
+                            }
+                            else
+                            {
+                                notesUI.SetActive(false);
+                                activeImage.SetActive(false);
+                                isShowing = false;
+                            }
+                        }
                     }
                 }
-
+                else
+                {
+                    notesUI.SetActive(false);
+                    activeImage.SetActive(false);
+                    isShowing = false;
+                }
             }
         }
     }
