@@ -72,6 +72,14 @@ public class clueFind : MonoBehaviour {
                     }
                 }
 
+                // check if voicemail
+                Voicemail vo = hit.collider.GetComponent<Voicemail>();
+                //if is voicemail
+                if (vo != null)
+                {
+                    vo.GetComponent<AudioSource>().Play();
+                }
+
                 // check if main clue
                 clue = hit.collider.GetComponent<Clue>();
 
