@@ -8,7 +8,13 @@ public class CreditsCue : MonoBehaviour {
     public Camera endcam;
     private float timer = 0;
 
-	void Start () {
+    //End Scene Lights Trigger
+    public Animation momLight;
+    public Animation fillLight;
+    public GameObject momLightLight;
+    public GameObject fillLightLight;
+
+    void Start () {
 	
 	}
 	
@@ -18,9 +24,20 @@ public class CreditsCue : MonoBehaviour {
 
             timer -= Time.deltaTime;
 
-            if (timer <= -11.0)
+            if (timer <= -12.0)
             {
                 creditsscreen.SetActive(true);
+            }
+
+            if (timer <= -10.0)
+            {
+                momLightLight.SetActive(false);
+            }
+
+            if (timer <= -8.0)
+            {
+                momLight.Play();
+                //fillLight.Play();
             }
 
         }
