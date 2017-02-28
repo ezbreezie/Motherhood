@@ -8,6 +8,14 @@ public class End : MonoBehaviour {
     public Animation fadein;
     public Animation end;
     public GameObject fadeinobj;
+    public GameObject doorTrigger;
+    public GameObject endTrigger;
+
+    void Update() {
+        if (endTrigger.activeSelf) {
+            doorTrigger.SetActive(false);
+        }
+    }
 
     void OnTriggerEnter(Collider other)
     {
