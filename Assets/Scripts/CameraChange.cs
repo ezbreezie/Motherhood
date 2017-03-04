@@ -16,9 +16,9 @@ public class CameraChange : MonoBehaviour {
 
         //Disable starting camera
 
-        startcam.enabled = false;
+        //startcam.enabled = false;
         endcam.enabled = false;
-        //playcam.enabled = false;
+        playcam.enabled = false;
 
         Button btn = start.GetComponent<Button>();
         btn.onClick.AddListener(TaskOnClick);
