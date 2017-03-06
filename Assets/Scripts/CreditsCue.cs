@@ -7,6 +7,7 @@ public class CreditsCue : MonoBehaviour {
     public GameObject creditsscreen;
     public Camera endcam;
     private float timer = 0;
+    public Animation MomBB;
 
     //End Scene Lights Trigger
     public Animation momLight;
@@ -38,6 +39,11 @@ public class CreditsCue : MonoBehaviour {
             {
                 momLight.Play();
                 //fillLight.Play();
+            }
+
+            if (timer <= -0.6)
+            {
+               MomBB.Play();
             }
 
         }

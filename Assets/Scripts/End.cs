@@ -6,7 +6,6 @@ public class End : MonoBehaviour {
     public Camera playcam;
     public Camera endcam;
     public Animation fadein;
-    public Animation end;
     public GameObject fadeinobj;
     public GameObject doorTrigger;
     public GameObject endTrigger;
@@ -23,7 +22,6 @@ public class End : MonoBehaviour {
         playcam.enabled = false;
         endcam.enabled = true;
         fadein.Play();
-        end.Play();
 
     }
 
