@@ -5,11 +5,8 @@ public class characterController : MonoBehaviour {
 
     public float speed = 10.0F;
     public pausedState paused;
-
-    void Start (){
-
-        Cursor.lockState = CursorLockMode.Locked;
-    }
+    public GameObject pausedUI;
+    public bool mouseHide = true;
 	
 	void Update () {
 
@@ -23,8 +20,27 @@ public class characterController : MonoBehaviour {
 
             transform.Translate(straffe, 0, translation);
 
-            if (Input.GetKeyDown("escape"))
-                Cursor.lockState = CursorLockMode.None;
         }
+
+        if (paused.GetPausedState() == false)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+
+        if (Input.GetKeyDown("escape"))
+        {
+            if (mouseHide == true)
+            {
+                pausedUI.SetActive(true);
+                Cursor.lockState = CursorLockMode.None;
+                mouseHide = false;
+            }
+            else
+            {
+                pausedUI.SetActive(false);
+                mouseHide = true;
+            }
+        }
+
     }
 }

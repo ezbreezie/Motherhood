@@ -8,6 +8,7 @@ public class PauseOnEnable : MonoBehaviour {
     void OnEnable()
     {
         pauser.SetPausedState(true);
+        Cursor.lockState = CursorLockMode.None;
     }
 
     void OnDisable()

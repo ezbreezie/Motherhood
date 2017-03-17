@@ -8,6 +8,8 @@ public class CreditsCue : MonoBehaviour {
     public Camera endcam;
     private float timer = 0;
     public Animation MomBB;
+    public AudioSource Dad;
+    private bool dadPlay;
 
     //End Scene Lights Trigger
     public Animation momLight;
@@ -38,7 +40,11 @@ public class CreditsCue : MonoBehaviour {
             if (timer <= -8.0)
             {
                 momLight.Play();
-                //fillLight.Play();
+            }
+
+            if (timer <= -5.0)
+            {
+                dadPlay = true;
             }
 
             if (timer <= -0.6)
@@ -46,6 +52,11 @@ public class CreditsCue : MonoBehaviour {
                MomBB.Play();
             }
 
+        }
+
+        if (dadPlay == false)
+        {
+            Dad.Play();
         }
 	
 	}

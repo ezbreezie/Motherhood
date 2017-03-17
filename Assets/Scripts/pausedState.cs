@@ -13,6 +13,6 @@ public class pausedState : MonoBehaviour {
     public bool GetPausedState()
     {
         return paused;
-    }
+    } 
 
 }
