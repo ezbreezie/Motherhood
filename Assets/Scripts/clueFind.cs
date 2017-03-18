@@ -19,6 +19,11 @@ public class clueFind : MonoBehaviour {
     public List<clueData> clues;
     public List<clueData> sclues;
 
+    private Shader standard;
+    private Shader outline;
+    public Renderer vrend;
+    private Renderer crend;
+
     GameObject mainCamera;
     public Button CLF;
     public Button BRF;
@@ -32,57 +37,70 @@ public class clueFind : MonoBehaviour {
     private bool isShowing;
     private GameObject activeImage;
 
-    void Start () {
+    //raycast
+    public float distance;
+    RaycastHit hit;
+    private bool touching = false;
 
-        mainCamera = GameObject.FindWithTag("MainCamera");
+    void Start () {
+        
         isShowing = false;
+
+        standard = Shader.Find("Standard");
+        outline = Shader.Find("Outlined/Diffuse");
+
+        crend = gameObject.GetComponent<Renderer>();
 
     }
 	
 	void Update () {
+        Debug.Log(gameObject);
+        Debug.DrawRay(this.transform.position, this.transform.forward * distance, Color.blue);
 
-        pickup();
-
-    }
-
-    void pickup()
-    {
-        if (Input.GetMouseButtonDown(0))
+        if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, distance))
         {
-            int x = Screen.width / 2;
-            int y = Screen.height / 2;
+            touching = true;
+            // check if voicemail
+            Voicemail vo = hit.collider.GetComponent<Voicemail>();
+            // check if main clue
+            clue = hit.collider.GetComponent<Clue>();
 
-            Ray ray = mainCamera.GetComponent<Camera>().ScreenPointToRay(new Vector3(x, y));
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
+            if (vo != null || clue != null)
             {
-                // check if lockbox
-                Lockbox lo = hit.collider.GetComponent<Lockbox>();
-                //if is lockbox
-                if (lo != null)
-                {
-                    if (lockUI.activeSelf)
-                    {
-                        lockUI.SetActive(false);
-                    }
-                    else
-                    {
-                        lockUI.SetActive(true);
-                        q1.ActivateInputField();
-                    }
-                }
+                touching = true;
+            } else
+            {
+                touching = false;
+            }
 
-                // check if voicemail
-                Voicemail vo = hit.collider.GetComponent<Voicemail>();
+            //OnHover
+            if (touching == true && vo != null)
+            {
+                vrend.material.shader = outline;
+            } else {
+                vrend.material.shader = standard;
+            }
+
+            if (touching == true && clue != null)
+            {
+                crend.material.shader = outline;
+
+            }
+            else
+            {
+                crend.material.shader = standard;
+            }
+
+            //OnClick
+            if (Input.GetMouseButtonDown(0))
+            {
                 //if is voicemail
                 if (vo != null)
                 {
                     vo.GetComponent<AudioSource>().Play();
                 }
 
-                // check if main clue
-                clue = hit.collider.GetComponent<Clue>();
-
+                //if is clue
                 if (isShowing == false)
                 {
                     clueData clueMatch = null;
@@ -142,6 +160,12 @@ public class clueFind : MonoBehaviour {
                     isShowing = false;
                 }
             }
+
+        } else
+        {
+            touching = false;
         }
+
     }
+    
 }

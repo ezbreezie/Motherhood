@@ -10,6 +10,7 @@ public class CameraChange : MonoBehaviour {
 
     public Button start;
     public GameObject startscreen;
+    public GameObject endscreen;
     public GameObject crosshair;
 
 	void Start () {
@@ -40,9 +41,21 @@ public class CameraChange : MonoBehaviour {
         if (playcam.enabled == true)
         {
             crosshair.SetActive(true);
-        } else
+            Cursor.lockState = CursorLockMode.Locked;
+
+        } else if (endscreen.activeSelf)
         {
             crosshair.SetActive(false);
+            Cursor.lockState = CursorLockMode.None;
+
+        } else if (endcam.enabled == true)
+        {
+            crosshair.SetActive(false);
+            Cursor.lockState = CursorLockMode.Locked;
+
+        } else
+        {
+            Cursor.lockState = CursorLockMode.None;
         }
 
     }

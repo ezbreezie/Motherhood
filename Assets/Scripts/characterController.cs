@@ -7,6 +7,7 @@ public class characterController : MonoBehaviour {
     public pausedState paused;
     public GameObject pausedUI;
     public bool mouseHide = true;
+    public Camera endCam;
 	
 	void Update () {
 
@@ -22,23 +23,23 @@ public class characterController : MonoBehaviour {
 
         }
 
-        if (paused.GetPausedState() == false)
+        if (endCam.enabled == false)
         {
-            Cursor.lockState = CursorLockMode.Locked;
-        }
 
-        if (Input.GetKeyDown("escape"))
-        {
-            if (mouseHide == true)
+            if (Input.GetKeyDown("escape"))
             {
-                pausedUI.SetActive(true);
-                Cursor.lockState = CursorLockMode.None;
-                mouseHide = false;
-            }
-            else
-            {
-                pausedUI.SetActive(false);
-                mouseHide = true;
+                if (mouseHide == true)
+                {
+                    pausedUI.SetActive(true);
+                    Cursor.lockState = CursorLockMode.None;
+                    mouseHide = false;
+                }
+                else
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                    pausedUI.SetActive(false);
+                    mouseHide = true;
+                }
             }
         }
 

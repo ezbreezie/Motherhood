@@ -4,16 +4,18 @@ using UnityEngine;
 
 public class NoEntry : MonoBehaviour {
 
-    public GameObject NotEntry;
+    public MeshCollider door;
+    public BoxCollider enterTrig;
 
-    void OnTriggerEnter(Collider other)
+    void Update()
     {
-        NotEntry.SetActive(true);
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        NotEntry.SetActive(false);
+        if (door.enabled == true)
+        {
+            enterTrig.enabled = false;
+        } else
+        {
+            enterTrig.enabled = true;
+        }
     }
 
 }

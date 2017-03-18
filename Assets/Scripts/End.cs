@@ -4,24 +4,28 @@ using System.Collections;
 public class End : MonoBehaviour {
 
     public Camera playcam;
-    public Camera endcam;
-    public Animation fadein;
-    public GameObject fadeinobj;
-    public GameObject doorTrigger;
-    public GameObject endTrigger;
+    public GameObject endScene;
+    public Camera endCam;
+    public GameObject fadeInEnd;
+    public Animation fadeInAnim;
+    public GameObject fadeout;
 
     void Update() {
-        if (endTrigger.activeSelf) {
-            doorTrigger.SetActive(false);
+
+        if (fadeInEnd.activeSelf && fadeInAnim.isPlaying == false)
+        {
+            endScene.SetActive(true);
+            endCam.enabled = true;
+            playcam.enabled = false;
+            fadeInEnd.SetActive(false);
+            fadeout.SetActive(true);
         }
+
     }
 
     void OnTriggerEnter(Collider other)
     {
-
-        playcam.enabled = false;
-        endcam.enabled = true;
-        fadein.Play();
+        fadeInEnd.SetActive(true);
 
     }
 
