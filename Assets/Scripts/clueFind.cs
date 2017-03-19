@@ -13,6 +13,7 @@ public class clueFind : MonoBehaviour {
         public GameObject closeupIMG;
         public Button uiButton;
         public GameObject model;
+        public Renderer crend;
     }
 
     Clue clue;
@@ -22,7 +23,6 @@ public class clueFind : MonoBehaviour {
     private Shader standard;
     private Shader outline;
     public Renderer vrend;
-    private Renderer crend;
 
     GameObject mainCamera;
     public Button CLF;
@@ -36,33 +36,35 @@ public class clueFind : MonoBehaviour {
     public InputField q1;
     private bool isShowing;
     private GameObject activeImage;
+    private Renderer activeHoverM;
+    private Renderer activeHoverS;
 
     //raycast
     public float distance;
     RaycastHit hit;
     private bool touching = false;
+    public GameObject otherObject;
 
     void Start () {
         
         isShowing = false;
 
         standard = Shader.Find("Standard");
-        outline = Shader.Find("Outlined/Diffuse");
-
-        crend = gameObject.GetComponent<Renderer>();
+        outline = Shader.Find("Outlined/Silhouetted Bumped");
 
     }
 	
 	void Update () {
-        Debug.Log(gameObject);
+ 
         Debug.DrawRay(this.transform.position, this.transform.forward * distance, Color.blue);
 
         if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, distance))
         {
             touching = true;
+
             // check if voicemail
             Voicemail vo = hit.collider.GetComponent<Voicemail>();
-            // check if main clue
+            // check if clue
             clue = hit.collider.GetComponent<Clue>();
 
             if (vo != null || clue != null)
@@ -73,7 +75,7 @@ public class clueFind : MonoBehaviour {
                 touching = false;
             }
 
-            //OnHover
+            //OnHover VO
             if (touching == true && vo != null)
             {
                 vrend.material.shader = outline;
@@ -81,14 +83,50 @@ public class clueFind : MonoBehaviour {
                 vrend.material.shader = standard;
             }
 
-            if (touching == true && clue != null)
-            {
-                crend.material.shader = outline;
+            clueData clueMatch = null;
+            clueData sclueMatch = null;
 
+            for (int i = 0; i < clues.Count; i++)
+            {
+                if (clues[i].clue == clue)
+                {
+                    clueMatch = clues[i];
+                    break;
+                }
+            }
+
+            for (int s = 0; s < sclues.Count; s++)
+            {
+                if (sclues[s].clue == clue)
+                {
+                    sclueMatch = sclues[s];
+                    break;
+                }
+            }
+
+            //OnHover Clue
+            if (clueMatch != null)
+            {
+                activeHoverM = clueMatch.crend;
+                activeHoverM.material.shader = outline;
+
+            }
+            else if (sclueMatch != null)
+            {
+                activeHoverS = sclueMatch.crend;
+                activeHoverS.material.shader = outline;
             }
             else
             {
-                crend.material.shader = standard;
+                if (activeHoverM != null)
+                {
+                    activeHoverM.material.shader = standard;
+                }
+
+                if (activeHoverS != null)
+                {
+                    activeHoverS.material.shader = standard;
+                }
             }
 
             //OnClick
@@ -103,20 +141,9 @@ public class clueFind : MonoBehaviour {
                 //if is clue
                 if (isShowing == false)
                 {
-                    clueData clueMatch = null;
-                    for (int i = 0; i < clues.Count; i++)
-                    {
-                        if (clues[i].clue == clue)
-                        {
-                            clueMatch = clues[i];
-                            break;
-                        }
-                    }
-
-                    //this is for when we find a main clue
+                    //main clue
                     if (clueMatch != null)
                     {
-                        clueMatch.uiButton.interactable = true;
                         clueMatch.model.SetActive(false);
                         notesUI.SetActive(true);
                         clueMatch.closeupIMG.SetActive(true);
@@ -124,33 +151,12 @@ public class clueFind : MonoBehaviour {
                         isShowing = true;
                     }
                     //check for subclue
-                    else
+                    if (sclueMatch != null)
                     {
-                        for (int i = 0; i < sclues.Count; i++)
-                        {
-                            if (sclues[i].clue == clue)
-                            {
-                                clueMatch = sclues[i];
-                                break;
-                            }
-                        }
-
-                        if (clueMatch != null)
-                        {
-                            if (isShowing == false)
-                            {
-                                notesUI.SetActive(true);
-                                clueMatch.closeupIMG.SetActive(true);
-                                activeImage = clueMatch.closeupIMG;
-                                isShowing = true;
-                            }
-                            else
-                            {
-                                notesUI.SetActive(false);
-                                activeImage.SetActive(false);
-                                isShowing = false;
-                            }
-                        }
+                        notesUI.SetActive(true);
+                        sclueMatch.closeupIMG.SetActive(true);
+                        activeImage = sclueMatch.closeupIMG;
+                        isShowing = true;
                     }
                 }
                 else

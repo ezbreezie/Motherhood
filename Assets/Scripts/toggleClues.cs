@@ -9,12 +9,12 @@ public class toggleClues : MonoBehaviour {
 
     void Update () {
 
-        if (Input.GetKeyDown("c"))
+        /* if (Input.GetKeyDown("c"))
         {
             isShowing = !isShowing;
             clues.SetActive(isShowing);
 
-        }
+        } */
 
     }
 
