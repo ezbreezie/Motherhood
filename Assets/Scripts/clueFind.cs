@@ -44,10 +44,12 @@ public class clueFind : MonoBehaviour {
     private Shader outline;
     public Renderer vrend;
     public Renderer srend;
+    public Renderer brend;
 
     public GameObject startNote;
     public GameObject notesUI;
     public GameObject puzzleUI;
+    public GameObject controls;
     public MeshCollider openDoor;
     private bool isShowing;
     private bool puzzleShowing;
@@ -80,8 +82,6 @@ public class clueFind : MonoBehaviour {
             Debug.Log("no...");
         }
         Debug.Log(puzzleShowing); */
-        Debug.Log(hasBear);
-        Debug.Log(touching);
         Debug.DrawRay(this.transform.position, this.transform.forward * distance, Color.blue);
 
         if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, distance))
@@ -95,20 +95,51 @@ public class clueFind : MonoBehaviour {
             // check if box
             Box box = hit.collider.GetComponent<Box>();
 
-            if (box != null)
+            //Submit clue to box (if have main blue)
+            if (box != null && hasBear || box != null && hasBlanket || box != null && hasBook || box != null && hasPicture)
             {
+                brend.material.shader = outline;
+
                 if (Input.GetMouseButtonDown(0))
                 {
-                    Debug.Log("ok..");
-                    if (hasBear == true)
+                    if (hasBear)
                     {
                         bearIn = true;
+                        hasBear = false;
                         boxBear.SetActive(true);
                         pickupBear.SetActive(false);
-                    } 
-                } 
+                    }
+
+                    if (hasBlanket)
+                    {
+                        blanketIn = true;
+                        hasBlanket = false;
+                        //boxBear.SetActive(true);*add correct model
+                        //pickupBear.SetActive(false);*add correct model
+                    }
+
+                    if (hasBook)
+                    {
+                        bookIn = true;
+                        hasBook = false;
+                        //boxBear.SetActive(true);*add correct model
+                        //pickupBear.SetActive(false);*add correct model
+                    }
+
+                    if (hasPicture)
+                    {
+                        pictureIn = true;
+                        hasPicture = false;
+                        //boxBear.SetActive(true);*add correct model
+                        //pickupBear.SetActive(false);*add correct model
+                    }
+                }
+            } else
+            {
+                brend.material.shader = standard;
             }
 
+            //startGame interaction
             if (sg != null)
             {
                 srend.material.shader = outline;
@@ -117,9 +148,9 @@ public class clueFind : MonoBehaviour {
                 {
                     startGame = true;
                     startNote.SetActive(false);
-                    // doesn't work after this ??
                     puzzleUI.SetActive(true);
                     puzzleShowing = true;
+                    return;
                 }
             }
             else
@@ -127,7 +158,8 @@ public class clueFind : MonoBehaviour {
                 srend.material.shader = standard;
             }
 
-            if (vo != null || clue != null)
+            //Disable hover if raycast not touching anything import
+            if (vo != null || clue != null || box != null)
             {
                 touching = true;
             }
@@ -146,6 +178,7 @@ public class clueFind : MonoBehaviour {
                 vrend.material.shader = standard;
             }
 
+            //if gameStart paper has been activated
             if (startGame)
             {
                 clueData clueMatch = null;
@@ -169,101 +202,101 @@ public class clueFind : MonoBehaviour {
                     }
                 }
 
-                /* if (hasBear || hasBlanket || hasBook || hasPicture)
+                //Deactivate hover and interact if has main clue
+                if (!hasBear && !hasBlanket && !hasBook && !hasPicture)
                 {
-                    clueMatch.model.layer = 2;
-                    sclueMatch.model.layer = 2;
-                    vo.gameObject.layer = 2;
-                }
-                else
-                {
-                    clueMatch.model.layer = 0;
-                    sclueMatch.model.layer = 2;
-                    vo.gameObject.layer = 0;
-                } */
-
-                //OnHover Clue
-                if (clueMatch != null)
-                {
-                    activeHoverM = clueMatch.crend;
-                    activeHoverM.material.shader = outline;
-
-                }
-                else if (sclueMatch != null)
-                {
-                    activeHoverS = sclueMatch.crend;
-                    activeHoverS.material.shader = outline;
-                }
-                else
-                {
-                    if (activeHoverM != null)
+                    //OnHover Clue
+                    if (clueMatch != null)
                     {
-                        activeHoverM.material.shader = standard;
+                        activeHoverM = clueMatch.crend;
+                        activeHoverM.material.shader = outline;
+
                     }
-
-                    if (activeHoverS != null)
+                    else if (sclueMatch != null)
                     {
-                        activeHoverS.material.shader = standard;
-                    }
-                }
-
-                //OnClick
-                if (Input.GetMouseButtonDown(0))
-                {
-                    //if is voicemail
-                    if (vo != null)
-                    {
-                        vo.GetComponent<AudioSource>().Play();
-                    }
-
-                    //if is clue
-                    if (isShowing == false)
-                    {
-                        //main clue
-                        if (clueMatch != null && touching == true)
-                        {
-                            clueMatch.model.SetActive(false);
-                            clueMatch.inHandmodel.SetActive(true);
-                            puzzleShowing = true;
-
-                            if (clueMatch.isBear)
-                            {
-                                hasBear = true;
-                            }
-
-                            if (clueMatch.isBlanket)
-                            {
-                                hasBear = true;
-                            }
-
-                            if (clueMatch.isBear)
-                            {
-                                hasBear = true;
-                            }
-
-                            if (clueMatch.isBear)
-                            {
-                                hasBear = true;
-                            }
-                        }
-                        //check for subclue
-                        if (sclueMatch != null && touching == true)
-                        {
-                            notesUI.SetActive(true);
-                            sclueMatch.closeupIMG.SetActive(true);
-                            activeImage = sclueMatch.closeupIMG;
-                            isShowing = true;
-                        }
+                        activeHoverS = sclueMatch.crend;
+                        activeHoverS.material.shader = outline;
                     }
                     else
                     {
-                        if (activeImage != null)
+                        if (activeHoverM != null)
                         {
-                            activeImage.SetActive(false);
-                            notesUI.SetActive(false);
+                            activeHoverM.material.shader = standard;
                         }
 
-                        isShowing = false;
+                        if (activeHoverS != null)
+                        {
+                            activeHoverS.material.shader = standard;
+                        }
+                    }
+
+                    //OnClick
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        //if is voicemail
+                        if (vo != null)
+                        {
+                            vo.GetComponent<AudioSource>().Play();
+                        }
+
+                        //if is clue
+                        if (isShowing == false)
+                        {
+                            //main clue
+                            if (clueMatch != null && touching == true)
+                            {
+                                clueMatch.model.SetActive(false);
+                                clueMatch.inHandmodel.SetActive(true);
+                                puzzleUI.SetActive(true);
+                                clueMatch.clearSentence.SetActive(true);
+                                clueMatch.blurSentence.SetActive(false);
+                                puzzleShowing = true;
+
+                                if (clueMatch.isBear)
+                                {
+                                    hasBear = true;
+                                    return;
+                                }
+
+                                if (clueMatch.isBlanket)
+                                {
+                                    hasBlanket = true;
+                                    return;
+                                }
+
+                                if (clueMatch.isBook)
+                                {
+                                    hasBook = true;
+                                    return;
+                                }
+
+                                if (clueMatch.isPicture)
+                                {
+                                    hasPicture = true;
+                                    return;
+                                }
+                            }
+
+                            //check for subclue
+                            if (sclueMatch != null && touching == true)
+                            {
+                                notesUI.SetActive(true);
+                                sclueMatch.closeupIMG.SetActive(true);
+                                activeImage = sclueMatch.closeupIMG;
+                                isShowing = true;
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            if (activeImage != null)
+                            {
+                                activeImage.SetActive(false);
+                                notesUI.SetActive(false);
+                            }
+
+                            isShowing = false;
+                        }
                     }
                 }
             }
@@ -273,22 +306,40 @@ public class clueFind : MonoBehaviour {
             touching = false;
         }
 
-        if (puzzleShowing == true)
+        //If puzzleUI showing (Maybe display button change?)
+        if (puzzleShowing)
         {
             if (Input.GetMouseButtonDown(0))
             {
                 puzzleUI.SetActive(false);
                 puzzleShowing = false;
+                controls.SetActive(true);
+            }
+            if (Input.GetMouseButtonDown(1))
+            {
+                puzzleUI.SetActive(false);
+                puzzleShowing = false;
+            }
+        } else
+        {
+            if (startGame)
+            {
+                if (Input.GetMouseButtonDown(1))
+                {
+                    puzzleUI.SetActive(true);
+                    puzzleShowing = true;
+                }
             }
         }
 
+        //First Clue Found: Game Start
         if (hasBear == true)
         {
             openDoor.enabled = false;
         }
 
         //End Puzzle
-        if (bearIn)
+        if (bearIn && blanketIn && bookIn && pictureIn)
         {
             endTrigger.SetActive(true);
         }

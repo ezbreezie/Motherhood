@@ -27,27 +27,27 @@ public class CreditsCue : MonoBehaviour {
 
             timer -= Time.deltaTime;
 
-            if (timer <= -13.0)
+            if (timer <= -13.5)
             {
                 creditsscreen.SetActive(true);
             }
 
-            if (timer <= -11.0)
+            if (timer <= -11.5)
             {
                 momLightLight.SetActive(false);
             }
 
-            if (timer <= -9.0)
+            if (timer <= -8.5)
             {
                 momLight.Play();
             }
 
-            if (timer <= -6.0)
+            if (timer <= -6.5)
             {
                 dadPlay = true;
             }
 
-            if (timer <= -1)
+            if (timer <= -0.5)
             {
                MomBB.Play();
             }
