@@ -27,6 +27,8 @@ public class clueFind : MonoBehaviour {
     public List<clueData> sclues;
 
     //puzzle
+
+        //bools
     private bool startGame = false;
     private bool hasBear = false;
     private bool bearIn = false;
@@ -36,12 +38,33 @@ public class clueFind : MonoBehaviour {
     private bool bookIn = false;
     private bool hasPicture = false;
     private bool pictureIn = false;
+        //objects
     public GameObject boxBear;
     public GameObject pickupBear;
-    public GameObject endTrigger;
+    public GameObject boxStory;
+    public GameObject pickupstory;
+    public GameObject boxBlanket;
+    public GameObject pickupBlanket;
+    public GameObject boxPicture;
+    public GameObject pickupPicture;
 
+    //end pieces
+    public GameObject lightsout;
+    public GameObject puzzleEnd;
+    public Animation puzzleEndAnim;
+    public GameObject endTrigger;
+    public GameObject boxofClues;
+    public GameObject boxClosed;
+        //lullaby fadein
+    public AudioSource lullaby;
+    private float timeIn;
+    public float sp = 1f;
+    private bool fadingIn = false;
+
+    //shader hover
     private Shader standard;
     private Shader outline;
+    public Renderer nrend;
     public Renderer vrend;
     public Renderer srend;
     public Renderer brend;
@@ -51,6 +74,8 @@ public class clueFind : MonoBehaviour {
     public GameObject puzzleUI;
     public GameObject controls;
     public MeshCollider openDoor;
+    public MeshCollider brDoor;
+    public MeshCollider cDoor;
     private bool isShowing;
     private bool puzzleShowing;
     private GameObject activeImage;
@@ -67,6 +92,8 @@ public class clueFind : MonoBehaviour {
         isShowing = false;
         //PuzzleUI
         puzzleShowing = false;
+        //Lullaby Setup
+        lullaby.spatialBlend = sp;
         //Find Shaders
         standard = Shader.Find("Standard");
         outline = Shader.Find("Outlined/Silhouetted Bumped");
@@ -74,14 +101,21 @@ public class clueFind : MonoBehaviour {
 	
 	void Update () {
 
-        /*if (puzzleUI.activeSelf)
+        //Lullaby Setup
+        lullaby.spatialBlend = sp;
+        timeIn = Time.deltaTime;
+
+        if (fadingIn == true)
         {
-            Debug.Log("ok...");
-        } else
-        {
-            Debug.Log("no...");
+            sp -= 0.01f * timeIn;
+
+            if (sp <= 0f)
+            {
+                sp = 0f;
+                timeIn = 0f;
+            }
         }
-        Debug.Log(puzzleShowing); */
+
         Debug.DrawRay(this.transform.position, this.transform.forward * distance, Color.blue);
 
         if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, distance))
@@ -94,6 +128,34 @@ public class clueFind : MonoBehaviour {
             startGame sg = hit.collider.GetComponent<startGame>();
             // check if box
             Box box = hit.collider.GetComponent<Box>();
+            // check if finished letter
+            EndLetter el = hit.collider.GetComponent<EndLetter>();
+
+            //End Letter
+            if (el != null)
+            {
+                nrend.material.shader = outline;
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    if (puzzleShowing)
+                    {
+                        puzzleEnd.SetActive(false);
+                        puzzleShowing = false;
+                        return;
+                    }
+                    else
+                    {
+                        puzzleEnd.SetActive(true);
+                        puzzleShowing = true;
+                        return;
+                    }
+                }
+
+            } else
+            {
+                nrend.material.shader = standard;
+            }
 
             //Submit clue to box (if have main blue)
             if (box != null && hasBear || box != null && hasBlanket || box != null && hasBook || box != null && hasPicture)
@@ -114,24 +176,24 @@ public class clueFind : MonoBehaviour {
                     {
                         blanketIn = true;
                         hasBlanket = false;
-                        //boxBear.SetActive(true);*add correct model
-                        //pickupBear.SetActive(false);*add correct model
+                        boxBlanket.SetActive(true);
+                        pickupBlanket.SetActive(false);
                     }
 
                     if (hasBook)
                     {
                         bookIn = true;
                         hasBook = false;
-                        //boxBear.SetActive(true);*add correct model
-                        //pickupBear.SetActive(false);*add correct model
+                        boxStory.SetActive(true);
+                        pickupstory.SetActive(false);
                     }
 
                     if (hasPicture)
                     {
                         pictureIn = true;
                         hasPicture = false;
-                        //boxBear.SetActive(true);*add correct model
-                        //pickupBear.SetActive(false);*add correct model
+                        boxPicture.SetActive(true);
+                        pickupPicture.SetActive(false);
                     }
                 }
             } else
@@ -249,7 +311,7 @@ public class clueFind : MonoBehaviour {
                                 clueMatch.inHandmodel.SetActive(true);
                                 puzzleUI.SetActive(true);
                                 clueMatch.clearSentence.SetActive(true);
-                                clueMatch.blurSentence.SetActive(false);
+                                clueMatch.blurSentence.GetComponent<Animation>().enabled = true;
                                 puzzleShowing = true;
 
                                 if (clueMatch.isBear)
@@ -312,12 +374,14 @@ public class clueFind : MonoBehaviour {
             if (Input.GetMouseButtonDown(0))
             {
                 puzzleUI.SetActive(false);
+                puzzleEnd.SetActive(false);
                 puzzleShowing = false;
                 controls.SetActive(true);
             }
             if (Input.GetMouseButtonDown(1))
             {
                 puzzleUI.SetActive(false);
+                puzzleEnd.SetActive(false);
                 puzzleShowing = false;
             }
         } else
@@ -341,7 +405,37 @@ public class clueFind : MonoBehaviour {
         //End Puzzle
         if (bearIn && blanketIn && bookIn && pictureIn)
         {
-            endTrigger.SetActive(true);
+            endGame();
+            puzzleEnd.SetActive(true);
+            puzzleEndAnim.enabled = true;
         }
+
+        if (puzzleEndAnim.enabled == true)
+        {
+            if (puzzleEndAnim.isPlaying == false)
+            {
+                puzzleShowing = true;
+                puzzleEndAnim.enabled = false;
+                boxofClues.SetActive(false);
+                boxClosed.SetActive(true);
+            }
+        }
+
     }
+
+    void endGame()
+    {
+        bearIn = false;
+        blanketIn = false;
+        pictureIn = false;
+        bookIn = false;
+        startGame = false;
+        lightsout.SetActive(false);
+        endTrigger.SetActive(true);
+        openDoor.enabled = true;
+        brDoor.enabled = true;
+        cDoor.enabled = true;
+        fadingIn = true;
+    }
+
 }

@@ -9,6 +9,7 @@ public class End : MonoBehaviour {
     public GameObject fadeInEnd;
     public Animation fadeInAnim;
     public GameObject fadeout;
+    public AudioSource passerby;
 
     void Update() {
 
@@ -26,6 +27,7 @@ public class End : MonoBehaviour {
     void OnTriggerEnter(Collider other)
     {
         fadeInEnd.SetActive(true);
+        passerby.Play();
 
     }
 
