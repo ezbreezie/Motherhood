@@ -55,6 +55,7 @@ public class clueFind : MonoBehaviour {
     public GameObject endTrigger;
     public GameObject boxofClues;
     public GameObject boxClosed;
+    public GameObject safeGuard;
         //lullaby fadein
     public AudioSource lullaby;
     private float timeIn;
@@ -68,6 +69,10 @@ public class clueFind : MonoBehaviour {
     public Renderer vrend;
     public Renderer srend;
     public Renderer brend;
+    public Renderer trend;
+    public Renderer torend;
+    public Renderer torend2;
+    public Renderer drend;
 
     public GameObject startNote;
     public GameObject notesUI;
@@ -76,11 +81,18 @@ public class clueFind : MonoBehaviour {
     public MeshCollider openDoor;
     public MeshCollider brDoor;
     public MeshCollider cDoor;
+    public AudioSource paper;
+    public AudioSource ducky;
     private bool isShowing;
     private bool puzzleShowing;
     private GameObject activeImage;
     private Renderer activeHoverM;
     private Renderer activeHoverS;
+
+    //interactivity
+    public GameObject tvOn;
+    private bool tvIsOn = false;
+    public AudioSource flush;
 
     //raycast
     public float distance;
@@ -130,6 +142,12 @@ public class clueFind : MonoBehaviour {
             Box box = hit.collider.GetComponent<Box>();
             // check if finished letter
             EndLetter el = hit.collider.GetComponent<EndLetter>();
+            // check if tv
+            TV tv = hit.collider.GetComponent<TV>();
+            // check if toilet
+            Toilet t = hit.collider.GetComponent<Toilet>();
+            //check if duck
+            Ducky d = hit.collider.GetComponent<Ducky>();
 
             //End Letter
             if (el != null)
@@ -148,6 +166,7 @@ public class clueFind : MonoBehaviour {
                     {
                         puzzleEnd.SetActive(true);
                         puzzleShowing = true;
+                        paper.Play();
                         return;
                     }
                 }
@@ -212,6 +231,7 @@ public class clueFind : MonoBehaviour {
                     startNote.SetActive(false);
                     puzzleUI.SetActive(true);
                     puzzleShowing = true;
+                    paper.Play();
                     return;
                 }
             }
@@ -221,23 +241,13 @@ public class clueFind : MonoBehaviour {
             }
 
             //Disable hover if raycast not touching anything import
-            if (vo != null || clue != null || box != null)
+            if (vo != null || clue != null || box != null || tv != null)
             {
                 touching = true;
             }
             else
             {
                 touching = false;
-            }
-
-            //OnHover VO
-            if (touching == true && vo != null)
-            {
-                vrend.material.shader = outline;
-            }
-            else
-            {
-                vrend.material.shader = standard;
             }
 
             //if gameStart paper has been activated
@@ -267,6 +277,77 @@ public class clueFind : MonoBehaviour {
                 //Deactivate hover and interact if has main clue
                 if (!hasBear && !hasBlanket && !hasBook && !hasPicture)
                 {
+                    //VO Hover
+                    if (touching == true && vo != null)
+                    {
+                        vrend.material.shader = outline;
+                    }
+                    else
+                    {
+                        vrend.material.shader = standard;
+                    }
+
+                    //If is Ducky
+                    if (d != null)
+                    {
+                        drend.material.shader = outline;
+
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            ducky.Play();
+                        }
+
+                    }
+                    else
+                    {
+                        drend.material.shader = standard;
+                    }
+
+                    //If is Toilet
+                    if (t != null)
+                    {
+                        torend.material.shader = outline;
+                        torend2.material.shader = outline;
+
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            flush.Play();
+                        }
+
+                    }
+                    else
+                    {
+                        torend.material.shader = standard;
+                        torend2.material.shader = standard;
+                    }
+
+                    //If is TV
+                    if (tv != null)
+                    {
+                        trend.material.shader = outline;
+
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            if (tvIsOn)
+                            {
+                                tvOn.SetActive(false);
+                                tvIsOn = false;
+                                return;
+                            }
+                            else
+                            {
+                                tvOn.SetActive(true);
+                                tvIsOn = true;
+                                return;
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        trend.material.shader = standard;
+                    }
+
                     //OnHover Clue
                     if (clueMatch != null)
                     {
@@ -313,6 +394,7 @@ public class clueFind : MonoBehaviour {
                                 clueMatch.clearSentence.SetActive(true);
                                 clueMatch.blurSentence.GetComponent<Animation>().enabled = true;
                                 puzzleShowing = true;
+                                paper.Play();
 
                                 if (clueMatch.isBear)
                                 {
@@ -346,6 +428,7 @@ public class clueFind : MonoBehaviour {
                                 sclueMatch.closeupIMG.SetActive(true);
                                 activeImage = sclueMatch.closeupIMG;
                                 isShowing = true;
+                                paper.Play();
                                 return;
                             }
                         }
@@ -392,6 +475,7 @@ public class clueFind : MonoBehaviour {
                 {
                     puzzleUI.SetActive(true);
                     puzzleShowing = true;
+                    paper.Play();
                 }
             }
         }
@@ -407,6 +491,7 @@ public class clueFind : MonoBehaviour {
         {
             endGame();
             puzzleEnd.SetActive(true);
+            paper.Play();
             puzzleEndAnim.enabled = true;
         }
 
@@ -432,6 +517,7 @@ public class clueFind : MonoBehaviour {
         startGame = false;
         lightsout.SetActive(false);
         endTrigger.SetActive(true);
+        safeGuard.SetActive(true);
         openDoor.enabled = true;
         brDoor.enabled = true;
         cDoor.enabled = true;
