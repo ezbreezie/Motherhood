@@ -17,7 +17,7 @@ public class clueFind : MonoBehaviour {
         public GameObject clearSentence;
         public GameObject blurSentence;
         public bool isBear;
-        public bool isBlanket;
+        public bool isPillow;
         public bool isBook;
         public bool isPicture;
     }
@@ -27,13 +27,12 @@ public class clueFind : MonoBehaviour {
     public List<clueData> sclues;
 
     //puzzle
-
         //bools
     private bool startGame = false;
     private bool hasBear = false;
     private bool bearIn = false;
-    private bool hasBlanket = false;
-    private bool blanketIn = false;
+    private bool hasPillow = false;
+    private bool PillowIn = false;
     private bool hasBook = false;
     private bool bookIn = false;
     private bool hasPicture = false;
@@ -43,8 +42,8 @@ public class clueFind : MonoBehaviour {
     public GameObject pickupBear;
     public GameObject boxStory;
     public GameObject pickupstory;
-    public GameObject boxBlanket;
-    public GameObject pickupBlanket;
+    public GameObject boxPillow;
+    public GameObject pickupPillow;
     public GameObject boxPicture;
     public GameObject pickupPicture;
 
@@ -73,6 +72,8 @@ public class clueFind : MonoBehaviour {
     public Renderer torend;
     public Renderer torend2;
     public Renderer drend;
+    public Color red;
+    public Color yellow;
 
     public GameObject startNote;
     public GameObject notesUI;
@@ -176,8 +177,8 @@ public class clueFind : MonoBehaviour {
                 nrend.material.shader = standard;
             }
 
-            //Submit clue to box (if have main blue)
-            if (box != null && hasBear || box != null && hasBlanket || box != null && hasBook || box != null && hasPicture)
+            //Submit clue to box (if have main clue)
+            if (box != null && hasBear || box != null && hasPillow || box != null && hasBook || box != null && hasPicture)
             {
                 brend.material.shader = outline;
 
@@ -191,12 +192,12 @@ public class clueFind : MonoBehaviour {
                         pickupBear.SetActive(false);
                     }
 
-                    if (hasBlanket)
+                    if (hasPillow)
                     {
-                        blanketIn = true;
-                        hasBlanket = false;
-                        boxBlanket.SetActive(true);
-                        pickupBlanket.SetActive(false);
+                        PillowIn = true;
+                        hasPillow = false;
+                        boxPillow.SetActive(true);
+                        pickupPillow.SetActive(false);
                     }
 
                     if (hasBook)
@@ -273,120 +274,128 @@ public class clueFind : MonoBehaviour {
                         break;
                     }
                 }
-
-                //Deactivate hover and interact if has main clue
-                if (!hasBear && !hasBlanket && !hasBook && !hasPicture)
+                
+                //VO Hover
+                if (touching == true && vo != null)
                 {
-                    //VO Hover
-                    if (touching == true && vo != null)
+                    vrend.material.shader = outline;
+                }
+                else
+                {
+                    vrend.material.shader = standard;
+                }
+
+                //If is Ducky
+                if (d != null)
+                {
+                    drend.material.shader = outline;
+
+                    if (Input.GetMouseButtonDown(0))
                     {
-                        vrend.material.shader = outline;
-                    }
-                    else
-                    {
-                        vrend.material.shader = standard;
+                        ducky.Play();
                     }
 
-                    //If is Ducky
-                    if (d != null)
-                    {
-                        drend.material.shader = outline;
+                }
+                else
+                {
+                    drend.material.shader = standard;
+                }
 
-                        if (Input.GetMouseButtonDown(0))
+                //If is Toilet
+                if (t != null)
+                {
+                    torend.material.shader = outline;
+                    torend2.material.shader = outline;
+
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        flush.Play();
+                    }
+
+                }
+                else
+                {
+                    torend.material.shader = standard;
+                    torend2.material.shader = standard;
+                }
+
+                //If is TV
+                if (tv != null)
+                {
+                    trend.material.shader = outline;
+
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        if (tvIsOn)
                         {
-                            ducky.Play();
+                            tvOn.SetActive(false);
+                            tvIsOn = false;
+                            return;
                         }
-
-                    }
-                    else
-                    {
-                        drend.material.shader = standard;
-                    }
-
-                    //If is Toilet
-                    if (t != null)
-                    {
-                        torend.material.shader = outline;
-                        torend2.material.shader = outline;
-
-                        if (Input.GetMouseButtonDown(0))
+                        else
                         {
-                            flush.Play();
+                            tvOn.SetActive(true);
+                            tvIsOn = true;
+                            return;
                         }
-
-                    }
-                    else
-                    {
-                        torend.material.shader = standard;
-                        torend2.material.shader = standard;
                     }
 
-                    //If is TV
-                    if (tv != null)
-                    {
-                        trend.material.shader = outline;
+                }
+                else
+                {
+                    trend.material.shader = standard;
+                }
 
-                        if (Input.GetMouseButtonDown(0))
-                        {
-                            if (tvIsOn)
-                            {
-                                tvOn.SetActive(false);
-                                tvIsOn = false;
-                                return;
-                            }
-                            else
-                            {
-                                tvOn.SetActive(true);
-                                tvIsOn = true;
-                                return;
-                            }
-                        }
-
-                    }
-                    else
-                    {
-                        trend.material.shader = standard;
-                    }
-
-                    //OnHover Clue
-                    if (clueMatch != null)
+                //OnHover Clue
+                if (clueMatch != null)
+                {
+                    if (!hasBear && !hasPillow && !hasBook && !hasPicture)
                     {
                         activeHoverM = clueMatch.crend;
                         activeHoverM.material.shader = outline;
-
-                    }
-                    else if (sclueMatch != null)
+                        activeHoverM.material.SetColor("_OutlineColor", yellow);
+                    } else
                     {
-                        activeHoverS = sclueMatch.crend;
-                        activeHoverS.material.shader = outline;
-                    }
-                    else
-                    {
-                        if (activeHoverM != null)
-                        {
-                            activeHoverM.material.shader = standard;
-                        }
-
-                        if (activeHoverS != null)
-                        {
-                            activeHoverS.material.shader = standard;
-                        }
+                        activeHoverM = clueMatch.crend;
+                        activeHoverM.material.shader = outline;
+                        activeHoverM.material.SetColor("_OutlineColor", red);
                     }
 
-                    //OnClick
-                    if (Input.GetMouseButtonDown(0))
+                }
+                else if (sclueMatch != null)
+                {
+                    activeHoverS = sclueMatch.crend;
+                    activeHoverS.material.shader = outline;
+                }
+                else
+                {
+                    if (activeHoverM != null)
                     {
-                        //if is voicemail
-                        if (vo != null)
-                        {
-                            vo.GetComponent<AudioSource>().Play();
-                        }
+                        activeHoverM.material.shader = standard;
+                    }
 
-                        //if is clue
-                        if (isShowing == false)
+                    if (activeHoverS != null)
+                    {
+                        activeHoverS.material.shader = standard;
+                    }
+                }
+
+                //OnClick
+                if (Input.GetMouseButtonDown(0))
+                {
+                    //if is voicemail
+                    if (vo != null)
+                    {
+                        vo.GetComponent<AudioSource>().Play();
+                    }
+
+                    //if is clue
+                    if (isShowing == false)
+                    {
+                        //main clue
+                        if (clueMatch != null && touching == true)
                         {
-                            //main clue
-                            if (clueMatch != null && touching == true)
+                            if (!hasBear && !hasPillow && !hasBook && !hasPicture)
                             {
                                 clueMatch.model.SetActive(false);
                                 clueMatch.inHandmodel.SetActive(true);
@@ -402,9 +411,9 @@ public class clueFind : MonoBehaviour {
                                     return;
                                 }
 
-                                if (clueMatch.isBlanket)
+                                if (clueMatch.isPillow)
                                 {
-                                    hasBlanket = true;
+                                    hasPillow = true;
                                     return;
                                 }
 
@@ -419,29 +428,33 @@ public class clueFind : MonoBehaviour {
                                     hasPicture = true;
                                     return;
                                 }
+                            } else
+                            {
+                                // do nothing/play sound
                             }
 
-                            //check for subclue
-                            if (sclueMatch != null && touching == true)
-                            {
-                                notesUI.SetActive(true);
-                                sclueMatch.closeupIMG.SetActive(true);
-                                activeImage = sclueMatch.closeupIMG;
-                                isShowing = true;
-                                paper.Play();
-                                return;
-                            }
                         }
-                        else
+
+                        //check for subclue
+                        if (sclueMatch != null && touching == true)
                         {
-                            if (activeImage != null)
-                            {
-                                activeImage.SetActive(false);
-                                notesUI.SetActive(false);
-                            }
-
-                            isShowing = false;
+                            notesUI.SetActive(true);
+                            sclueMatch.closeupIMG.SetActive(true);
+                            activeImage = sclueMatch.closeupIMG;
+                            isShowing = true;
+                            paper.Play();
+                            return;
                         }
+                    }
+                    else
+                    {
+                        if (activeImage != null)
+                        {
+                            activeImage.SetActive(false);
+                            notesUI.SetActive(false);
+                        }
+
+                        isShowing = false;
                     }
                 }
             }
@@ -487,7 +500,7 @@ public class clueFind : MonoBehaviour {
         }
 
         //End Puzzle
-        if (bearIn && blanketIn && bookIn && pictureIn)
+        if (bearIn && PillowIn && bookIn && pictureIn)
         {
             endGame();
             puzzleEnd.SetActive(true);
@@ -511,7 +524,7 @@ public class clueFind : MonoBehaviour {
     void endGame()
     {
         bearIn = false;
-        blanketIn = false;
+        PillowIn = false;
         pictureIn = false;
         bookIn = false;
         startGame = false;
