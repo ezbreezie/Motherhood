@@ -401,7 +401,7 @@ public class clueFind : MonoBehaviour {
                                 clueMatch.inHandmodel.SetActive(true);
                                 puzzleUI.SetActive(true);
                                 clueMatch.clearSentence.SetActive(true);
-                                clueMatch.blurSentence.GetComponent<Animation>().enabled = true;
+                                clueMatch.blurSentence.GetComponent<Animation>().Play("unBlur");
                                 puzzleShowing = true;
                                 paper.Play();
 
