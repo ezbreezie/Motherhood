@@ -72,9 +72,8 @@ public class clueFind : MonoBehaviour {
     public Renderer torend;
     public Renderer torend2;
     public Renderer drend;
-    public Color red;
-    public Color yellow;
 
+    private GameObject activeHandModel;
     public GameObject startNote;
     public GameObject notesUI;
     public GameObject puzzleUI;
@@ -83,7 +82,6 @@ public class clueFind : MonoBehaviour {
     public MeshCollider brDoor;
     public MeshCollider cDoor;
     public AudioSource paper;
-    public AudioSource ducky;
     private bool isShowing;
     private bool puzzleShowing;
     private GameObject activeImage;
@@ -94,6 +92,7 @@ public class clueFind : MonoBehaviour {
     public GameObject tvOn;
     private bool tvIsOn = false;
     public AudioSource flush;
+    public AudioSource ducky;
 
     //raycast
     public float distance;
@@ -349,18 +348,8 @@ public class clueFind : MonoBehaviour {
                 //OnHover Clue
                 if (clueMatch != null)
                 {
-                    if (!hasBear && !hasPillow && !hasBook && !hasPicture)
-                    {
-                        activeHoverM = clueMatch.crend;
-                        activeHoverM.material.shader = outline;
-                        activeHoverM.material.SetColor("_OutlineColor", yellow);
-                    } else
-                    {
-                        activeHoverM = clueMatch.crend;
-                        activeHoverM.material.shader = outline;
-                        activeHoverM.material.SetColor("_OutlineColor", red);
-                    }
-
+                    activeHoverM = clueMatch.crend;
+                    activeHoverM.material.shader = outline;
                 }
                 else if (sclueMatch != null)
                 {
@@ -399,6 +388,7 @@ public class clueFind : MonoBehaviour {
                             {
                                 clueMatch.model.SetActive(false);
                                 clueMatch.inHandmodel.SetActive(true);
+                                activeHandModel = clueMatch.inHandmodel;
                                 puzzleUI.SetActive(true);
                                 clueMatch.clearSentence.SetActive(true);
                                 clueMatch.blurSentence.GetComponent<Animation>().Play("unBlur");
@@ -430,7 +420,7 @@ public class clueFind : MonoBehaviour {
                                 }
                             } else
                             {
-                                // do nothing/play sound
+                                activeHandModel.GetComponent<Animation>().Play();
                             }
 
                         }
